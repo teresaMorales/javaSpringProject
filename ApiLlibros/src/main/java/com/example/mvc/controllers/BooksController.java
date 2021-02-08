@@ -2,14 +2,19 @@ package com.example.mvc.controllers;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.example.mvc.models.Book;
 import com.example.mvc.services.BookService;
 
-//... Sentencias import removidas para resumir
 @Controller
 public class BooksController {
  final BookService bookService;
@@ -24,4 +29,36 @@ public class BooksController {
      model.addAttribute("books", books);
      return "/books/index.jsp";
  }
+ @RequestMapping("/books/new")
+ public String newBook(@ModelAttribute("book") Book book) {
+     return "/books/new.jsp";
+ }
+ @RequestMapping(value="/books", method=RequestMethod.POST)
+ public String create(@Valid @ModelAttribute("book") Book book, BindingResult result) {
+     if (result.hasErrors()) {
+         return "/books/new.jsp";
+     } else {
+         bookService.createBook(book);
+         return "redirect:/books";
+     	}
+ 	}
+ @RequestMapping(value="/books/show/{id}")
+ public String bookShow(Model model, @PathVariable("id")Long id) {
+	Book books =  bookService.findBook(id);
+     model.addAttribute("book", books);
+     return "/books/show.jsp";
+ 	}
+ 
 }
+
+//set modificar
+//get obtener
+
+
+
+
+
+
+
+
+
